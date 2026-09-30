@@ -159,10 +159,19 @@ impl RenderContext {
             .alpha_modes
             .contains(&CompositeAlphaMode::PostMultiplied)
         {
-            (
-                CompositeAlphaMode::PostMultiplied,
-                TextureBlitter::new(&device_handle.device, format),
-            )
+            // wgpu 28 advertises straight alpha on Metal, but Core Animation composites
+            // transparent CAMetalLayer content as premultiplied alpha. Vello outputs straight
+            // alpha, so multiply RGB by alpha before presenting through this backend.
+            // gfx-rs/wgpu#9922 corrects the advertised mode in a future release; once it is
+            // available, Metal will use the PreMultiplied branch below instead.
+            let blitter = if device_handle.adapter.get_info().backend == wgpu::Backend::Metal {
+                TextureBlitterBuilder::new(&device_handle.device, format)
+                    .blend_state(PREMUL_BLEND_STATE)
+                    .build()
+            } else {
+                TextureBlitter::new(&device_handle.device, format)
+            };
+            (CompositeAlphaMode::PostMultiplied, blitter)
         } else if capabilities
             .alpha_modes
             .contains(&CompositeAlphaMode::PreMultiplied)
