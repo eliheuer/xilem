@@ -173,4 +173,10 @@ where
             on_close(state);
         }
     }
+
+    pub(crate) fn on_file_drop(&self, state: &mut State, path: std::path::PathBuf) {
+        if let Some(on_file_drop) = &self.options.callbacks.on_file_drop {
+            on_file_drop(state, path);
+        }
+    }
 }

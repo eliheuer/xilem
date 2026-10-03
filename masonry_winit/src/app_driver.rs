@@ -127,6 +127,18 @@ pub trait AppDriver {
 
     /// Called when Masonry has created its WGPU device.
     fn on_wgpu_ready(&mut self, _wgpu: &WgpuContext<'_>) {}
+
+    /// A hook called when a file is dropped on a window.
+    ///
+    /// The drop has no position: the platform reports only which window received the file.
+    fn on_file_dropped(
+        &mut self,
+        window_id: WindowId,
+        path: std::path::PathBuf,
+        ctx: &mut DriverCtx<'_>,
+    ) {
+        let _ = (window_id, path, ctx);
+    }
 }
 
 impl DriverCtx<'_> {

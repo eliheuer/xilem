@@ -108,6 +108,7 @@ impl<State>
                         initial: window_options.initial.clone(),
                         callbacks: WindowCallbacks {
                             on_close: Some(Box::new(on_close)),
+                            on_file_drop: None,
                         },
                     }),
                 )

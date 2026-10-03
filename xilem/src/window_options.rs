@@ -45,10 +45,14 @@ pub(crate) struct InitialAttrs {
 
 pub(crate) struct WindowCallbacks<State> {
     pub(crate) on_close: Option<Box<dyn Fn(&mut State)>>,
+    pub(crate) on_file_drop: Option<Box<dyn Fn(&mut State, std::path::PathBuf)>>,
 }
 impl<S> Default for WindowCallbacks<S> {
     fn default() -> Self {
-        Self { on_close: None }
+        Self {
+            on_close: None,
+            on_file_drop: None,
+        }
     }
 }
 
@@ -81,6 +85,15 @@ impl<State> WindowOptions<State> {
     /// Sets a callback to execute when the user has requested to close the window.
     pub fn on_close(mut self, callback: impl Fn(&mut State) + 'static) -> Self {
         self.callbacks.on_close = Some(Box::new(callback));
+        self
+    }
+
+    /// Sets a callback to execute when a file is dropped on the window.
+    pub fn on_file_drop(
+        mut self,
+        callback: impl Fn(&mut State, std::path::PathBuf) + 'static,
+    ) -> Self {
+        self.callbacks.on_file_drop = Some(Box::new(callback));
         self
     }
 

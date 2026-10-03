@@ -378,6 +378,19 @@ where
         }
     }
 
+    fn on_file_dropped(
+        &mut self,
+        window_id: WindowId,
+        path: std::path::PathBuf,
+        ctx: &mut DriverCtx<'_>,
+    ) {
+        let Some(window) = self.windows.get(&window_id) else {
+            return;
+        };
+        window.view.on_file_drop(&mut self.state, path);
+        self.run_logic(ctx);
+    }
+
     fn on_close_requested(&mut self, window_id: WindowId, ctx: &mut DriverCtx<'_>) {
         let view = &self.windows.get(&window_id).unwrap().view;
         view.on_close(&mut self.state);

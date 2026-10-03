@@ -911,6 +911,9 @@ impl MasonryState {
             WinitWindowEvent::CloseRequested => {
                 app_driver.on_close_requested(window.id, &mut DriverCtx::new(self, event_loop));
             }
+            WinitWindowEvent::DroppedFile(path) => {
+                app_driver.on_file_dropped(window.id, path, &mut DriverCtx::new(self, event_loop));
+            }
             WinitWindowEvent::Resized(size) => {
                 #[cfg(target_os = "macos")]
                 {
