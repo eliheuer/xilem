@@ -89,7 +89,14 @@ pub fn paint_background(
     // TODO: Fix remaining issues, see https://github.com/linebender/xilem/issues/1592
     //    1. Don't subtract the border from the background rect. Will need solution for border
     //       painting, as background should go exactly to the outer border and not beyond.
-    let bg_rect = border_width.bg_rect(border_box, corner_radius);
+    // Fill to the border's centerline, not its inner edge: the border is
+    // stroked on top and covers the fill's antialiased edge, so no sliver of
+    // the ground shows between the fill and the border at the corners.
+    let bg_rect = if border_width.width.get() > 0.0 {
+        border_width.border_rect(border_box, corner_radius)
+    } else {
+        border_width.bg_rect(border_box, corner_radius)
+    };
     let bg_brush = background.get_peniko_brush_for_rect(bg_rect.rect());
     painter.fill(bg_rect, &bg_brush).draw();
 }

@@ -133,13 +133,19 @@ impl BorderWidth {
 
     /// Creates a rounded rectangle that is inset by half the border width.
     ///
-    /// Use to display a box's border.
+    /// Use to display a box's border. The radius is reduced by half the
+    /// border width, so the stroke's corner arcs are concentric with the
+    /// border box: its outer edge has the box's radius and its inner edge
+    /// meets the background from [`bg_rect`](Self::bg_rect) without a gap.
+    /// A stroke centered on the full radius curves away from the box at each
+    /// corner, which reads as a corner heavier than the straight edges.
     ///
     /// Helper function to be called in [`Widget::paint`].
     pub fn border_rect(&self, border_box: Rect, border_radius: &CornerRadius) -> RoundedRect {
         let border_width = self.width.get();
+        let radius = (border_radius.radius.get() - border_width / 2.0).max(0.0);
         border_box
             .inset(-border_width / 2.0)
-            .to_rounded_rect(border_radius.radius.get())
+            .to_rounded_rect(radius)
     }
 }
